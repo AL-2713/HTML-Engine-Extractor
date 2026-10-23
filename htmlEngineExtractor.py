@@ -51,11 +51,12 @@ class htmlEngineExtractor:
             isValid = engineClass.validate(parsedEmbed, _embedUrl)
             
             if isValid:
-                engineObj = engineClass
                 self.determinedEngine = engineID
-                print("Determined engine type: " + engineObj.ENGINE_NAME)
-                engineObj.addUrl(_embedUrl)
-                self.assetsList = engineObj.scrape(parsedEmbed, _embedUrl)
+                print("Determined engine type: " + engineClass.ENGINE_NAME)
+                
+                engineClass.addUrl(_embedUrl)
+                engineClass.setUrlBase(_embedUrl)
+                self.assetsList = engineClass.scrape(parsedEmbed, _embedUrl)
                 
                 return self.saveAssets()
         
@@ -69,10 +70,12 @@ class htmlEngineExtractor:
             print("! The engine for this game could not be determined")
             return
 
+        urlCount = str(len(self.assetsList))
+        
         match(self.exportOption):
             case 0:
                 urlFileLocation = self.fileWriter.writeFilesToTxt(self.assetsList)
-                print("! Exported file URLs to " + urlFileLocation)
+                print(f"! Exported {urlCount} file URLs to " + urlFileLocation)
             
             case 1:
                 print("downlaod")
