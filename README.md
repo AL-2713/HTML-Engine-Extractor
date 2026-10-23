@@ -17,3 +17,5 @@ These are the engines that can be extracted. Some support for these are still be
 - Ren'Py
 - Unity WebGL
 - GDevelop
+- Defold
+- Twine
