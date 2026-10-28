@@ -9,15 +9,25 @@ requests.packages.urllib3.disable_warnings()
 
 class s_requests:
     
+    def __init__(self):
+        self.headers = None
+        
+    
+    
     def loadFile(self, _url, _params = {}, _decode = True):
         if _url[:4] != "http":
             print("NOT A VALID URL")
             return None
-                
+
+
+        if _params == {} and self.headers:
+            _params = self.headers
+        
         urlContent = None
+        urlContent = requests.get(_url, verify=False, headers=_params)
         while urlContent == None:
             try:
-                urlContent = requests.get(_url, verify=False)
+                urlContent = requests.get(_url, verify=False, headers=_params)
             except:
                 print(f"Error getting url: {_url}, waiting to retry...")
                 time.sleep(20)
@@ -31,11 +41,13 @@ class s_requests:
         
         return urlContent
 
+
     # Load and parse an html file
     def loadEmbed(self, _embedUrl):
         fileContent = self.loadFile(_embedUrl)
         parsedEmbed = BeautifulSoup(fileContent, 'html.parser')
         return parsedEmbed
+    
     
     # Load and parse a json file
     def loadJson(self, _jsonUrl):
@@ -46,3 +58,7 @@ class s_requests:
         
         except:
             return None
+    
+    
+    def setHeaders(self, _headers):
+        self.headers = _headers
