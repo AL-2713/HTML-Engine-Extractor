@@ -1,14 +1,15 @@
 import importlib
 import tinycss2
-from urllib.parse import urlparse
+from urllib.parse import urlparse, quote
 from pathlib import Path
 
 # Loads all the engine classes in the engine/ directory
 class engineBase:
         
-    def __init__(self):
+    def __init__(self, _req):
         self.engineContainer = {}
         self.engineListFile = "engines/engineIds.txt"
+        self.req = _req
         self.initEngines()
     
     
@@ -17,6 +18,7 @@ class engineBase:
         
         for engineId in engineslist:
             self.engineContainer[engineId] = getattr(importlib.import_module("engines." + engineId, package=None), engineId)
+            self.engineContainer[engineId].setReq(self.req)
 
 
 
@@ -26,13 +28,20 @@ class engineObj:
     req = None
     urlBase = ""
     assetArray = []
-    commonFileTypes = [".gif", ".png", ".jpg", ".mp3", ".wav", "otf", "ttf"]
+    commonFileTypes = [".gif", ".png", ".webp", ".jpg", ".mp3", ".wav", ".ogg", ".m4a", ".webm", "otf", "ttf"]
+    urlSafeChars = "/:"
     
     def setReq(_req):
         engineObj.req = _req
     
     def setUrlBase(_embedUrl):
         engineObj.urlBase = engineObj.getUrlBase(_embedUrl)
+    
+    def setLogger(_logger):
+        engineObj.log = _logger
+    
+    def resetAssetArray():
+        engineObj.assetArray = []
     
     
     # Return the directory url of a file
@@ -57,13 +66,12 @@ class engineObj:
 
         # Append the url to the array if it's a full url
         if "://" in _assetUrl:
-            engineObj.assetArray.append(_assetUrl)
+            engineObj.assetArray.append(quote(_assetUrl, engineObj.urlSafeChars))
         
         # If not a full url and it's a relative path, append the urlBase to the path
         else:
-            engineObj.assetArray.append(fullUrl)
-
-        
+            engineObj.assetArray.append(quote(fullUrl, engineObj.urlSafeChars))
+            
     
     
     # Find and extract all instances for img(*) in a css string
