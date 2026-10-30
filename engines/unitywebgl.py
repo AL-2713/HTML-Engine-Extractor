@@ -17,23 +17,26 @@ class unitywebgl(engineObj):
     def validate(parsedHtml, embedUrl):
         if parsedHtml.find("canvas", attrs={"id":"unity-canvas"}) or parsedHtml.find("div", attrs={"id":"unity-container"}) or parsedHtml.find("div", attrs={"id":"unityContainer"}):
             return True
+
+        for x in parsedHtml.findAll("script"):
+            if x.get("src") and "UnityLoader" in x.get("src"):
+                return True
         
         return False
     
     
     def scrape(_parsedHtml, _embedUrl):
-        urlBase = unitywebgl.getUrlBase(_embedUrl)
         
         # Embed link elements
         for linkElem in _parsedHtml.findAll("link"):
             if linkElem.get("href"):
-                unitywebgl.addUrl(urlBase + linkElem.get("href"))
+                unitywebgl.addUrl(linkElem.get("href"))
         
         
         # Stylesheet images
         stylesheetElem = _parsedHtml.find("link", attrs={"rel":"stylesheet"})
         if stylesheetElem:
-            stylesheetUrl = urlBase + stylesheetElem.get("href")
+            stylesheetUrl = unitywebgl.urlBase + stylesheetElem.get("href")
             stylesheetContents = unitywebgl.req.loadFile(stylesheetUrl)
             stylesheetLocation = unitywebgl.getUrlBase(stylesheetUrl)
             for x in unitywebgl.extractCssImages(stylesheetContents):
@@ -45,14 +48,14 @@ class unitywebgl(engineObj):
         for x in scripts:
             
             if x.get("src") and "http:" not in x.get("src") and "https:" not in x.get("src"):
-                unitywebgl.addUrl(urlBase + x.get("src"))
+                unitywebgl.addUrl(x.get("src"))
             
             
             # Some embeds store their instance data in a seperate json file (Example 2)
             # Here we extract the json path from the javascript, then parse the json to get the referenced files
             elif "UnityLoader.instantiate" in x.text:
                 instVals = x.text.split('.instantiate(')[1].split(");")[0].split(",")
-                jsonFile = urlBase + instVals[1].replace('"',"").strip()
+                jsonFile = unitywebgl.urlBase + instVals[1].replace('"',"").strip()
                 unitywebgl.addUrl(jsonFile)
                 
                 instanceContent = unitywebgl.req.loadJson(jsonFile)
@@ -70,14 +73,14 @@ class unitywebgl(engineObj):
                 loaderUrlVar = unitywebgl.regJavascriptVar(x.text, "loaderUrl")
                 if loaderUrlVar:
                     loaderUrlVar = loaderUrlVar.replace('buildUrl + "', buildUrlVal).strip('"')
-                    unitywebgl.addUrl(urlBase + loaderUrlVar)
+                    unitywebgl.addUrl(loaderUrlVar)
                 
                 # maybe regex can extract it
                 for configVar in unitywebgl.file_vars:
                     val = unitywebgl.regJavascriptDict(x.text, configVar)
                     if val:
                         configUrlPath = val.replace('buildUrl + "', buildUrlVal).strip('"')
-                        unitywebgl.addUrl(urlBase + configUrlPath)
+                        unitywebgl.addUrl(configUrlPath)
                     
         
         return unitywebgl.assetArray
