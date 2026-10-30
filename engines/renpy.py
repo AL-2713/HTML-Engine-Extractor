@@ -51,7 +51,7 @@ class renpy(engineObj):
         # Get game.zip and its files it requests
         zipFileUrl = urlBase + "game.zip"
         renpy.addUrl(zipFileUrl)
-        gameZipContent = renpy.req.loadFile(zipFileUrl, {"stream":True}, False)
+        gameZipContent = renpy.req.loadFile(zipFileUrl, {}, False)
         zipFile = zipfile.ZipFile(io.BytesIO(gameZipContent.content))
         with zipFile.open("game/renpyweb_remote_files.txt") as assetList:
             lines = assetList.read().decode().split("\n")
