@@ -15,7 +15,7 @@ class htmlEngineExtractor:
     def __init__(self, _exportOption = 2, _logLevel = 2):
         self.log = s_Logs(_logLevel)
         self.requestsBase = s_requests()
-        self.fileHandler = s_FileHandler()
+        self.fileHandler = s_FileHandler(self.requestsBase)
         
         self.determinedEngine = None
         self.exportOption = None
@@ -58,10 +58,10 @@ class htmlEngineExtractor:
                 self.determinedEngine = engineID
                 self.log.notify("Determined engine type: " + engineClass.ENGINE_NAME)
                 
+                engineClass.resetAssetArray()
                 engineClass.addUrl(_embedUrl)
                 engineClass.setUrlBase(_embedUrl)
                 engineClass.setLogger(self.log)
-                engineClass.resetAssetArray()
                 self.assetsList = engineClass.scrape(parsedEmbed, _embedUrl)
                 
                 return self.saveAssets()
@@ -79,13 +79,21 @@ class htmlEngineExtractor:
         urlCount = str(len(self.assetsList))
         
         match(self.exportOption):
+            
+            # Save to txt list
             case 0:
                 urlFileLocation = self.fileHandler.writeFilesToTxt(self.assetsList)
                 self.log.notify(f"Exported {urlCount} file URLs to " + urlFileLocation)
             
+            # Download
             case 1:
-                print("download (not implemented)")
+                self.log.notify(f"Downloading {urlCount} files..")
+                downloadFolder = self.fileHandler.getDownloadIdentifier(self.assetsList[0]) + "/"
+                
+                for file in self.assetsList:
+                    self.fileHandler.saveFile(file, downloadFolder)
             
+            # Return
             case 2:
                 return self.assetsList
     
