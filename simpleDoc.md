@@ -5,7 +5,8 @@ class <strong>htmlEngineExtractor</strong>(int _exportOption = 2, int _logLevel 
 
 Loading the class loads all the basic functions and engine classes needed for the extractor to work</br>
 - _exportOption: Determines how the class will save urls it extracts from the URL you request:
-    - 0: Saves the extracted urls to a list, inside "exports/"
+    - 0: Saves the extracted URLs to a list, inside "exports/"
+    - 1: Download the extracted URLs to the "exports/" folder
     - 2: Returns the array of URLs after running the getGame function
 
 - _logLevel: Specifies what messages to print in the console while running. Different levels will output different messages
