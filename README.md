@@ -20,3 +20,4 @@ These are the engines that can be extracted. Some support for these are still be
 - Defold
 - Twine
 - PICO-8
+- Godot
