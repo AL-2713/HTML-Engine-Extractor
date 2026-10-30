@@ -21,3 +21,4 @@ These are the engines that can be extracted. Some support for these are still be
 - Twine
 - PICO-8
 - Godot
+- GameMaker
