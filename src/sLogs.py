@@ -10,10 +10,16 @@ class s_Logs:
         self.logLevel = _logLevel
     
     
+    def error(self, _msg):
+        if self.logLevel >= 1:
+            print(f"[HEE] !! {_msg} !!")
+    
+    
     def notify(self, _msg):
         if self.logLevel >= 2:
             print(f"[HEE] - {_msg}")
     
-    def error(self, _msg):
-        if self.logLevel >= 1:
-            print(f"[HEE] !! {_msg} !!")
+    
+    def notifyProgress(self, _msg):
+        if self.logLevel >= 2:
+            print(f"[HEE] - {_msg}", end='\r')
