@@ -22,3 +22,4 @@ These are the engines that can be extracted. Some support for these are still be
 - PICO-8
 - Godot
 - GameMaker
+- GameSalad
