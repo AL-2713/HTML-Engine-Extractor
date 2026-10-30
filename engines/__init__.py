@@ -64,6 +64,9 @@ class engineObj:
         if _assetUrl in engineObj.assetArray or fullUrl in engineObj.assetArray:
             return
 
+        if "?" in _assetUrl:
+            _assetUrl = _assetUrl.split("?")[0]
+
         # Append the url to the array if it's a full url
         if "://" in _assetUrl:
             engineObj.assetArray.append(quote(_assetUrl, engineObj.urlSafeChars))
@@ -71,6 +74,16 @@ class engineObj:
         # If not a full url and it's a relative path, append the urlBase to the path
         else:
             engineObj.assetArray.append(quote(fullUrl, engineObj.urlSafeChars))
+    
+    
+    
+    # Iterate though all avalible elements in an html and save the urls
+    def iterateElement(_parsedHtml, _elementType, _attributeType):
+        items = _parsedHtml.findAll(_elementType)
+        for x in items:
+            if x.get(_attributeType):
+                engineObj.addUrl(x.get(_attributeType))
+        
             
     
     
