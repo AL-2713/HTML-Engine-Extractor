@@ -18,7 +18,7 @@ from engines import engineObj
 
 class gamemaker(engineObj):
     
-    ENGINE_NAME = "Gamemaker"
+    ENGINE_NAME = "GameMaker"
     
     
     def validate(parsedHtml, embedUrl):
