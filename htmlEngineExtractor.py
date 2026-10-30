@@ -90,8 +90,12 @@ class htmlEngineExtractor:
                 self.log.notify(f"Downloading {urlCount} files..")
                 downloadFolder = self.fileHandler.getDownloadIdentifier(self.assetsList[0]) + "/"
                 
+                fileProgress = 0
                 for file in self.assetsList:
                     self.fileHandler.saveFile(file, downloadFolder)
+                    
+                    fileProgress += 1
+                    self.log.notifyProgress(f"! Downloaded [{str(fileProgress)}/{str(urlCount)}]")
             
             # Return
             case 2:
