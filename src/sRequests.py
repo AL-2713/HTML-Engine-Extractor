@@ -59,6 +59,10 @@ class s_requests:
         except:
             return None
     
+    # Check if a file exists on the server
+    def fileExists(self, _fileUrl):
+        return requests.head(_fileUrl, verify=False).status_code == 200
+    
     
     def setHeaders(self, _headers):
         self.headers = _headers
