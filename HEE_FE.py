@@ -1,7 +1,9 @@
-from htmlEngineExtractor import htmlEngineExtractor as HEE
 import sys
 import os
 import json
+
+sys.path.insert(0, 'source')
+from htmlEngineExtractor import htmlEngineExtractor as HEE
 
 class HEE_FE:
     
@@ -17,6 +19,8 @@ class HEE_FE:
         
         else:
             self.inputUrl()
+        
+        
     
     
     # If the user made headers.txt in the root of the directory, try and load it as a headers json
@@ -32,9 +36,8 @@ class HEE_FE:
     
     # Prompt the user to input their embed url if it wasn't sent in the command
     def inputUrl(self):
+        
         self.validUrl = False
-        
-        
         while not self.validUrl:
             self.embedUrl = input("Input the embed URL: ")
             self.validUrl = self.embedUrl[:4] == "http"
