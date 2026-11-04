@@ -124,7 +124,7 @@ class rpgmaker(engineObj):
     # Encrypted file types are different between "rpg" and "rmmz" versions, while "rmmz" adds "_" to the end of the extension, "rpg" uses a different type entirely
     def getExt(_extType):
         encryptedTypes = [[".rpgmvp",".png_"],
-                          [".rpgmvo","ogg_"],
+                          [".rpgmvo",".ogg_"],
                           [".webm", ".webm"],
                           [".rpgmvm",".m4a_"]] # Need confirmation
         
@@ -240,11 +240,7 @@ class rpgmaker(engineObj):
                 case "NonCombatMenu":
                     rpgmaker.addUrl(rpgmaker.imgFuncArray['Picture'] + y['parameters']['Background Image'] + ".png")
                 
-                case "GALV_MessageBackground":
-                    if y['parameters']['Image Variable ID'] == "1":
-                        y['parameters']['Image Variable ID'] = "0"
-                    
-                    rpgmaker.addUrl(rpgmaker.imgFuncArray['System'] + "msgimg_" + y['parameters']['Image Variable ID'] + ".png")
+                
                 
                 case "YEP_X_ExtMesPack1":
                     rpgmaker.addUrl("audio/se/" + y['parameters']['Sound Name'] + ".ogg")
@@ -269,6 +265,24 @@ class rpgmaker(engineObj):
                     rpgmaker.addUrl("img/system/Window_Battle" + rpgmaker.getExt(0))
                     rpgmaker.addUrl("img/system/Window_Status" + rpgmaker.getExt(0))
                     rpgmaker.addUrl("img/system/Window_Other" + rpgmaker.getExt(0))
+                
+                case "MOG_TitleCommands":
+                    i = 0
+                    while i <= 3:
+                        rpgmaker.addUrl(rpgmaker.imgFuncArray['Title2'] + "Command_" + str(i) + rpgmaker.getExt(0))
+                        i += 1
+                
+                
+                case "GALV_MessageBackground":
+                    if y['parameters']['Image Variable ID'] == "1":
+                        y['parameters']['Image Variable ID'] = "0"
+                    
+                    rpgmaker.addUrl(rpgmaker.imgFuncArray['System'] + "msgimg_" + y['parameters']['Image Variable ID'] + ".png")
+                
+                case "GALV_MessageBackgroundMZ":
+                    i = 0 # More ids may be possible
+                    rpgmaker.addUrl(rpgmaker.imgFuncArray['System'] + "msgimg_" + str(i) + rpgmaker.getExt(0))
+                    
     
     
     # Find all map jsons
@@ -438,9 +452,11 @@ class rpgmaker(engineObj):
             
             # Regex notes for layer images
             if "note" in roomData and roomData['note'] != "":
-                layerReg = re.findall("LAYER [0-9]+ (.*?) ", roomData['note'])
-                if len(layerReg) > 0:
-                    rpgmaker.addUrl("img/layers/" + layerReg[0] + rpgmaker.getExt(0))
+                layerReg = re.findall("[LAYER|LAYER_S] [0-9]+ (.*?) ", roomData['note'])
+                for layerEntry in layerReg:
+                    rpgmaker.addUrl("img/layers/" + layerEntry + rpgmaker.getExt(0))
+                
+                
             
 
             for event in roomData['events']:
@@ -526,8 +542,21 @@ class rpgmaker(engineObj):
             
             # EVAL
             case 355:
-                
                 # Regex logic
                 videoReg = re.findall("startVideo\('(.*?)'", _list['parameters'][0])
                 if len(videoReg) > 0:
                     rpgmaker.addUrl("movies/" + videoReg[0] + rpgmaker.getExt(2))
+            
+            
+            # Plugin command
+            case 357:                
+                match(_list['parameters'][0]):
+                    
+                    case "GALV_LayerGraphicsMZ":
+                        if type(_list['parameters'][3]) is dict and "graphic" in _list['parameters'][3]:
+                            rpgmaker.addUrl("img/layers/" + _list['parameters'][3]['graphic'] + rpgmaker.getExt(0))
+                    
+                    case "CGMZ_ToastManager":
+                        if type(_list['parameters'][3]) is dict and "SE" in _list['parameters'][3]:
+                            seJson = json.loads(_list['parameters'][3]['SE'])
+                            rpgmaker.addUrl("audio/se/" + seJson['Name'] + rpgmaker.getExt(1))
