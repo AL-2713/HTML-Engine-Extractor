@@ -23,3 +23,5 @@ These are the engines that can be extracted. Some support for these are still be
 - Godot
 - GameMaker
 - GameSalad
+- Stencyl
+- RPG Maker
